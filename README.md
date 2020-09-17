@@ -6,4 +6,18 @@
 
 
 ## Introduction
-Manage your working periods with ease
+Manage your working periods with ease.
+
+## Installation
+### brew
+```
+brew install 1995parham/tap/zamaneh
+```
+
+## Usage
+```sh
+Usage:
+  zamaneh [topic]
+```
+
+It will start a timer for your topic to track your time.
