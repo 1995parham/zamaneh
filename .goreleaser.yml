@@ -7,7 +7,7 @@ release:
     name: zamaneh
 
 builds:
-  - binary: gosimac
+  - binary: zamaneh
     goos:
       - linux
       - darwin
