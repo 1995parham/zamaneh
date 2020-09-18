@@ -16,8 +16,24 @@ brew install 1995parham/tap/zamaneh
 
 ## Usage
 ```sh
+Manage your working periods with ease
+
 Usage:
-  zamaneh [topic]
+  zamaneh [flags]
+
+Examples:
+zamaneh --topic ml
+
+Flags:
+  -h, --help           help for zamaneh
+  -t, --topic string   working period title (default "untitled")
+  -v, --version        version for zamaneh
 ```
 
-It will start a timer for your topic to track your time.
+As an example following command:
+
+```sh
+zamaneh --topic ml
+```
+
+Create a working session with `ml` title to track your time.
