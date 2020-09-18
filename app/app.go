@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/1995parham/zamaneh/timer"
@@ -13,14 +14,18 @@ import (
 	"github.com/mum4k/termdash/terminal/termbox"
 	"github.com/mum4k/termdash/terminal/terminalapi"
 	"github.com/mum4k/termdash/widgets/segmentdisplay"
+	"github.com/mum4k/termdash/widgets/text"
 	"github.com/sirupsen/logrus"
 )
 
 const (
-	defaultFg           = cell.ColorDefault
-	RefreshRate         = 100 * time.Millisecond
-	PaddingLeftPercent  = 5
-	PaddingRightPercent = 5
+	yellowFg = 226
+	orangeFg = 215
+	cyanFg   = 123
+	pinkFg   = 218
+
+	RefreshRate    = 100 * time.Millisecond
+	PaddingPercent = 5
 )
 
 type App struct {
@@ -33,6 +38,7 @@ type App struct {
 
 	update chan []cell.Option
 	cron   *segmentdisplay.SegmentDisplay
+	text   *text.Text
 	panel  *container.Container
 	topic  string
 }
@@ -90,8 +96,38 @@ func (a *App) build() error {
 	if err := cron.Write([]*segmentdisplay.TextChunk{
 		segmentdisplay.NewChunk(
 			"00:00:00",
+			segmentdisplay.WriteCellOpts(cell.FgColor(cell.ColorNumber(yellowFg))),
 		),
 	}); err != nil {
+		return err
+	}
+
+	txt, err := text.New()
+	if err != nil {
+		return err
+	}
+
+	a.text = txt
+
+	if err := txt.Write(
+		fmt.Sprintf(
+			"Since: %s\nTopic: %s",
+			time.Now().Format(time.RFC822),
+			a.topic,
+		),
+		text.WriteCellOpts(
+			cell.FgColor(cell.ColorNumber(orangeFg)),
+		),
+	); err != nil {
+		return err
+	}
+
+	if err := txt.Write(
+		"\n\nSpending time with you is so precious,\nI love every minute that we are together.",
+		text.WriteCellOpts(
+			cell.FgColor(cell.ColorNumber(pinkFg)),
+		),
+	); err != nil {
 		return err
 	}
 
@@ -102,10 +138,34 @@ func (a *App) layout() error {
 	c, err := container.New(
 		a.Term,
 		container.Border(linestyle.Light),
-		container.BorderTitle(a.topic),
-		container.PlaceWidget(a.cron),
-		container.PaddingLeftPercent(PaddingLeftPercent),
-		container.PaddingRightPercent(PaddingRightPercent),
+		container.SplitHorizontal(
+			container.Top(
+				container.PlaceWidget(a.cron),
+			),
+			container.Bottom(
+				container.SplitVertical(
+					container.Left(
+						container.Border(linestyle.Light),
+						container.BorderColor(cell.ColorCyan),
+						container.BorderTitle("notes"),
+						container.PlaceWidget(a.text),
+						container.PaddingLeftPercent(PaddingPercent),
+						container.PaddingRightPercent(PaddingPercent),
+						container.PaddingTopPercent(PaddingPercent),
+					),
+					container.Right(
+						container.Border(linestyle.Light),
+						container.BorderColor(cell.ColorGreen),
+						container.BorderTitle("announcements"),
+						container.PaddingLeftPercent(PaddingPercent),
+						container.PaddingRightPercent(PaddingPercent),
+						container.PaddingTopPercent(PaddingPercent),
+					),
+				),
+			),
+		),
+		container.PaddingLeftPercent(PaddingPercent),
+		container.PaddingRightPercent(PaddingPercent),
 	)
 	if err != nil {
 		return err
@@ -129,7 +189,7 @@ func (a *App) keyHandler(k *terminalapi.Keyboard) {
 		} else {
 			a.timer.Stop()
 			a.update <- []cell.Option{
-				cell.FgColor(cell.ColorCyan),
+				cell.FgColor(cell.ColorNumber(cyanFg)),
 			}
 			a.isStop = true
 		}
@@ -140,7 +200,7 @@ func (a *App) cronner() {
 	var d time.Duration
 
 	defaultOptions := []cell.Option{
-		cell.FgColor(defaultFg),
+		cell.FgColor(cell.ColorNumber(yellowFg)),
 	}
 	opts := defaultOptions
 
@@ -159,7 +219,7 @@ func (a *App) cronner() {
 				segmentdisplay.WriteCellOpts(opts...),
 			),
 		}); err != nil {
-			logrus.Fatal(err)
+			logrus.Error(err)
 		}
 	}
 }
