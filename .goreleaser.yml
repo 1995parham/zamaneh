@@ -15,6 +15,12 @@ builds:
     goarch:
       - amd64
     main: ./main.go
+    ldflags:
+      - -s -w
+      - -X cmd.version={{.Version}}
+      - -X cmd.commit={{.Commit}}
+      - -X cmd.date={{.Date}}
+      - -X cmd.builtBy=goreleaser
 
 archives:
   - format: tar.gz
