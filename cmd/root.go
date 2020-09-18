@@ -11,9 +11,9 @@ import (
 
 // nolint: gocheckglobals
 var (
-	version = "dev"
-	commit  = "none"
-	date    = "unknown"
+	Version = "dev"
+	Commit  = "none"
+	Date    = "unknown"
 )
 
 const (
@@ -31,7 +31,7 @@ func Execute() {
 		Use:     "zamaneh",
 		Short:   "Manage your working periods with ease",
 		Example: "zamaneh --topic ml",
-		Version: fmt.Sprintf("%s %s [%s]", version, commit, date),
+		Version: fmt.Sprintf("%s %s [%s]", Version, Commit, Date),
 		Args:    cobra.NoArgs,
 
 		Run: func(cmd *cobra.Command, args []string) {

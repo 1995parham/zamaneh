@@ -17,10 +17,10 @@ builds:
     main: ./main.go
     ldflags:
       - -s -w
-      - -X cmd.version={{.Version}}
-      - -X cmd.commit={{.Commit}}
-      - -X cmd.date={{.Date}}
-      - -X cmd.builtBy=goreleaser
+      - -X github.com/1995parham/zamaneh/cmd.Version={{.Version}}
+      - -X github.com/1995parham/zamaneh/cmd.Commit={{.Commit}}
+      - -X github.com/1995parham/zamaneh/cmd.Date={{.Date}}
+      - -X github.com/1995parham/zamaneh/cmd.BuiltBy=goreleaser
 
 archives:
   - format: tar.gz
