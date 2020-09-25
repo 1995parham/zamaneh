@@ -24,7 +24,7 @@ const (
 	cyanFg   = 123
 	pinkFg   = 218
 
-	RefreshRate    = 100 * time.Millisecond
+	RefreshRate    = 1 * time.Second
 	PaddingPercent = 5
 )
 
@@ -35,6 +35,7 @@ type App struct {
 
 	isStop bool
 	timer  *timer.Timer
+	finish chan struct{}
 
 	update chan []cell.Option
 	cron   *segmentdisplay.SegmentDisplay
@@ -56,7 +57,8 @@ func New(topic string) (*App, error) {
 		Context: ctx,
 		Cancel:  cancel,
 
-		timer: timer.New(),
+		timer:  timer.New(),
+		finish: make(chan struct{}),
 
 		update: make(chan []cell.Option),
 		topic:  topic,
@@ -211,6 +213,10 @@ func (a *App) cronner() {
 			if len(opts) == 0 {
 				opts = defaultOptions
 			}
+		case <-a.finish:
+			fmt.Println(d)
+
+			return
 		}
 
 		if err := a.cron.Write([]*segmentdisplay.TextChunk{
@@ -227,4 +233,5 @@ func (a *App) cronner() {
 func (a *App) Close() {
 	a.Cancel()
 	a.Term.Close()
+	close(a.finish)
 }
