@@ -21,6 +21,12 @@ async fn main() {
 
     let mut secs = 0;
 
+    println!(
+        r#"
+Spending time with you is so precious,
+I love every minute that we are together.
+        "#
+    );
     println!("you are working on {}", topic);
     loop {
         match state {
