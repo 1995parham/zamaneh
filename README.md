@@ -7,4 +7,5 @@
 
 ## Introduction
 
-Manage your working periods with ease in rust.
+Manage your working periods with ease in rust. The first version had been written in go but I switched it into rust for having more fun.
+It tracks two periods repeatedly, one working period (25m) and one fun period (5m). I use it for measuring time that I work and etc.
