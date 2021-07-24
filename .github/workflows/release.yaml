@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest]
         rust: [stable]
         include:
           - os: macos-latest
@@ -23,10 +23,6 @@ jobs:
             artifact_prefix: linux
             target: x86_64-unknown-linux-gnu
             binary_postfix: ""
-          - os: windows-latest
-            artifact_prefix: windows
-            target: x86_64-pc-windows-msvc
-            binary_postfix: ".exe"
     steps:
       - name: installing rust toolchain
         uses: actions-rs/toolchain@v1
@@ -48,11 +44,7 @@ jobs:
           cd target/${{ matrix.target }}/release
           strip zamaneh${{ matrix.binary_postfix }}
           tar czvf zamaneh-${{ matrix.artifact_prefix }}.tar.gz zamaneh${{ matrix.binary_postfix }}
-          if [[ ${{ runner.os }} == 'Windows' ]]; then
-            certutil -hashfile zamaneh-${{ matrix.artifact_prefix }}.tar.gz sha256 | grep -E [A-Fa-f0-9]{64} > zamaneh-${{ matrix.artifact_prefix }}.sha256
-          else
             shasum -a 256 zamaneh-${{ matrix.artifact_prefix }}.tar.gz > zamaneh-${{ matrix.artifact_prefix }}.sha256
-          fi
       - name: Releasing assets
         uses: softprops/action-gh-release@v1
         with:
