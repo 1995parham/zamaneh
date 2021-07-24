@@ -1,0 +1,24 @@
+---
+name: test
+on:
+  - push
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout sources
+        uses: actions/checkout@v2
+      - name: install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+      - name: run cargo fmt
+        run: cargo fmt --all -- --check
+      - name: run cargo clippy
+        run: cargo clippy -- -D warnings
+      - name: run cargo test
+        run: cargo test
