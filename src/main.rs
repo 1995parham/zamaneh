@@ -1,23 +1,11 @@
 use tokio::time;
 
-enum State {
-    Working,
-    Fun,
-}
-
-const WORKING_PERIOD_MINS: u64 = 25;
-const FUN_PERIOD_MINS: u64 = 5;
-
 #[tokio::main]
 async fn main() {
     let mut args = std::env::args();
     let topic = args.nth(1).unwrap_or_else(|| "-".to_string());
 
     let mut sec_one_interval = time::interval(time::Duration::from_secs(1));
-    let mut working_interval = time::interval(time::Duration::from_secs(WORKING_PERIOD_MINS * 60));
-    let mut fun_interval = time::interval(time::Duration::from_secs(FUN_PERIOD_MINS * 60));
-
-    let mut state = State::Fun;
 
     let mut secs = 0;
 
@@ -29,53 +17,16 @@ I love every minute that we are together.
     );
     println!("you are working on {}", topic);
     loop {
-        match state {
-            State::Working => {
-                tokio::select! {
-                    _ = sec_one_interval.tick() => {
-                        secs += 1;
+        sec_one_interval.tick().await;
+        secs += 1;
 
-                        print!("{}", termion::cursor::Save);
-                        println!(
-                            "{:0>2}:{:0>2}:{:0>2}",
-                            (secs / 60) / 60,
-                            (secs / 60) % 60,
-                            secs % 60
-                        );
-                        print!("{}", termion::cursor::Restore);
-                    },
-                    _ = working_interval.tick() => {
-                        secs = 0;
-                        state = State::Fun;
-                        println!("time to have fun... {}min", FUN_PERIOD_MINS);
-                        fun_interval = time::interval(time::Duration::from_secs(FUN_PERIOD_MINS * 60));
-                        fun_interval.tick().await;
-                    },
-                }
-            }
-            State::Fun => {
-                tokio::select! {
-                    _ = sec_one_interval.tick() => {
-                        secs += 1;
-
-                        print!("{}", termion::cursor::Save);
-                        println!(
-                            "{:0>2}:{:0>2}:{:0>2}",
-                            (secs / 60) / 60,
-                            (secs / 60) % 60,
-                            secs % 60
-                        );
-                        print!("{}", termion::cursor::Restore);
-                    },
-                    _ = fun_interval.tick() => {
-                        secs = 0;
-                        state = State::Working;
-                        println!("time to work... {}min", WORKING_PERIOD_MINS);
-                        working_interval = time::interval(time::Duration::from_secs(WORKING_PERIOD_MINS * 60));
-                        working_interval.tick().await;
-                    },
-                }
-            }
-        };
+        print!("{}", termion::cursor::Save);
+        println!(
+            "{:0>2}:{:0>2}:{:0>2}",
+            (secs / 60) / 60,
+            (secs / 60) % 60,
+            secs % 60
+        );
+        print!("{}", termion::cursor::Restore);
     }
 }
