@@ -1,3 +1,4 @@
+use termion::cursor;
 use tokio::time;
 
 #[tokio::main]
@@ -10,10 +11,11 @@ async fn main() {
     let mut secs = 0;
 
     println!(
-        r#"
+        r#"{}
 Spending time with you is so precious,
 I love every minute that we are together.
-        "#
+        "#,
+        cursor::Hide
     );
     println!("you are working on {}", topic);
     loop {
