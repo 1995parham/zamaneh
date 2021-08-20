@@ -38,14 +38,14 @@ jobs:
           toolchain: ${{ matrix.rust }}
           args: --release --target ${{ matrix.target }}
 
-      - name: Packaging final binary
+      - name: packaging final binary
         shell: bash
         run: |
           cd target/${{ matrix.target }}/release
           strip zamaneh${{ matrix.binary_postfix }}
           tar czvf zamaneh-${{ matrix.artifact_prefix }}.tar.gz zamaneh${{ matrix.binary_postfix }}
-            shasum -a 256 zamaneh-${{ matrix.artifact_prefix }}.tar.gz > zamaneh-${{ matrix.artifact_prefix }}.sha256
-      - name: Releasing assets
+          shasum -a 256 zamaneh-${{ matrix.artifact_prefix }}.tar.gz > zamaneh-${{ matrix.artifact_prefix }}.sha256
+      - name: releasing assets
         uses: softprops/action-gh-release@v1
         with:
           files: |
