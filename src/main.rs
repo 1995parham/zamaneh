@@ -1,5 +1,6 @@
 use std::io::{stdin, stdout};
 use std::process::exit;
+use std::time::Duration;
 use termion::cursor;
 use termion::event::Key;
 use termion::input::TermRead;
@@ -19,7 +20,7 @@ async fn main() {
 
     let mut sec_one_interval = time::interval(time::Duration::from_secs(1));
 
-    let mut secs = 0;
+    let mut secs = Duration::new(0, 0);
 
     let (tx, mut rx) = channel::<Event>(1);
 
@@ -62,14 +63,7 @@ I love every minute that we are together.
                     },
                     Event::Quit => {
                         stdout.suspend_raw_mode().unwrap();
-                        println!(
-                        "{}you are working for {:0>2}:{:0>2}:{:0>2} on {}",
-                        cursor::Show,
-                        (secs / 60) / 60,
-                        (secs / 60) % 60,
-                        secs % 60,
-                        topic
-                        );
+                        println!("{}you are working for {} on on {}", cursor::Show, format_duration(secs), topic);
                         exit(0);
                     }
                 }
@@ -77,18 +71,23 @@ I love every minute that we are together.
             _ = sec_one_interval.tick() => {
                 if !is_pause {
 
-                    secs += 1;
+                    secs += Duration::from_secs(1);
 
                     print!("{}", termion::cursor::Save);
-                    println!(
-                    "{:0>2}:{:0>2}:{:0>2}",
-                    (secs / 60) / 60,
-                    (secs / 60) % 60,
-                    secs % 60
-                    );
+                    println!("{}", format_duration(secs));
                     print!("{}", termion::cursor::Restore);
                 }
             }
         }
     }
+}
+
+fn format_duration(d: Duration) -> String {
+    let secs = d.as_secs();
+    return format!(
+        "{:0>2}:{:0>2}:{:0>2}",
+        (secs / 60) / 60,
+        (secs / 60) % 60,
+        secs % 60
+    );
 }
