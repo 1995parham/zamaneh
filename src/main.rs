@@ -1,3 +1,4 @@
+use clap::{App, Arg};
 use std::io::{stdin, stdout};
 use std::process::exit;
 use std::time::Duration;
@@ -13,10 +14,20 @@ enum Event {
     Quit,
 }
 
+const TOPIC_ARG_NAME: &str = "title";
+
 #[tokio::main]
 async fn main() {
-    let mut args = std::env::args();
-    let topic = args.nth(1).unwrap_or_else(|| "-".to_string());
+    let args = App::new("zamaneh")
+        .about("Manage your working periods with ease")
+        .arg(
+            Arg::with_name(TOPIC_ARG_NAME)
+                .takes_value(true)
+                .help("working period title")
+                .default_value("-"),
+        )
+        .get_matches();
+    let topic = args.value_of(TOPIC_ARG_NAME).unwrap();
 
     let mut sec_one_interval = time::interval(time::Duration::from_secs(1));
 
@@ -69,14 +80,18 @@ I love every minute that we are together.
                 }
             },
             _ = sec_one_interval.tick() => {
+                print!("{}", termion::cursor::Save);
+
                 if !is_pause {
-
                     secs += Duration::from_secs(1);
-
-                    print!("{}", termion::cursor::Save);
-                    println!("{}", format_duration(secs));
-                    print!("{}", termion::cursor::Restore);
+                    print!("{}", termion::color::Fg(termion::color::LightRed));
+                } else {
+                    print!("{}", termion::color::Fg(termion::color::LightBlue));
                 }
+
+                println!("{}", format_duration(secs));
+                print!("{}", termion::color::Fg(termion::color::Reset));
+                print!("{}", termion::cursor::Restore);
             }
         }
     }
