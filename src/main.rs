@@ -80,8 +80,6 @@ I love every minute that we are together.
                 }
             },
             _ = sec_one_interval.tick() => {
-                print!("{}", termion::cursor::Save);
-
                 if !is_pause {
                     secs += Duration::from_secs(1);
                     print!("{}", termion::color::Fg(termion::color::LightRed));
@@ -89,9 +87,10 @@ I love every minute that we are together.
                     print!("{}", termion::color::Fg(termion::color::LightBlue));
                 }
 
+                print!("{}", termion::cursor::Save);
                 println!("{}", format_duration(secs));
-                print!("{}", termion::color::Fg(termion::color::Reset));
                 print!("{}", termion::cursor::Restore);
+                print!("{}", termion::color::Fg(termion::color::Reset));
             }
         }
     }
