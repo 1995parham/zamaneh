@@ -7,5 +7,5 @@ edition = "2018"
 
 [dependencies]
 clap = "2.33.3"
-termion = "1"
-tokio = { version = "1.9", features = [ "full" ] }
+termion = "1.5.6"
+tokio = { version = "1.10.1", features = [ "full" ] }
