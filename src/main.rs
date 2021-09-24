@@ -50,6 +50,9 @@ async fn main() {
                 Key::Char(' ') => {
                     let _ = tx.send(Event::Pause).await;
                 }
+                Key::Ctrl('c') => {
+                    let _ = tx.send(Event::Quit).await;
+                }
                 _ => {}
             }
         }
