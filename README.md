@@ -1,4 +1,5 @@
 # zamaneh
+# migrate to https://git.sr.ht/~paralvan/zamaneh
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/1995parham/zamaneh/test?label=test&logo=github&style=flat-square)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/1995parham/zamaneh/release?label=release&logo=github&style=flat-square)
