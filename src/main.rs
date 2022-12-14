@@ -22,7 +22,7 @@ you give it a title and then it start couting. it does not
 store anything on your system.
 ";
 
-#[derive(Parser,Debug)]
+#[derive(Parser, Debug)]
 #[command(author = "Parham Alvani <parham.alvani>")]
 #[command(version, long_about = ABOUT)]
 struct Args {
@@ -30,7 +30,6 @@ struct Args {
     #[arg(short, long, default_value_t = String::from("-"))]
     title: String,
 }
-
 
 #[tokio::main]
 async fn main() {
