@@ -101,10 +101,10 @@ I love every minute that we are together.
 
 fn format_duration(d: Duration) -> String {
     let secs = d.as_secs();
-    return format!(
+    format!(
         "{:0>2}:{:0>2}:{:0>2}",
         (secs / 60) / 60,
         (secs / 60) % 60,
         secs % 60
-    );
+    )
 }
