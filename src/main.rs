@@ -1,4 +1,4 @@
-use clap::{App, Arg};
+use clap::Parser;
 use std::io::{stdin, stdout};
 use std::process::exit;
 use std::time::Duration;
@@ -14,20 +14,28 @@ enum Event {
     Quit,
 }
 
-const TOPIC_ARG_NAME: &str = "title";
+const ABOUT: &str = "
+Manage your working periods with ease
+----
+Zamaneh helps me to track my times on different tasks,
+you give it a title and then it start couting. it does not
+store anything on your system.
+";
+
+#[derive(Parser,Debug)]
+#[command(author = "Parham Alvani <parham.alvani>")]
+#[command(version, long_about = ABOUT)]
+struct Args {
+    /// working period title
+    #[arg(short, long, default_value_t = String::from("-"))]
+    title: String,
+}
+
 
 #[tokio::main]
 async fn main() {
-    let args = App::new("zamaneh")
-        .about("Manage your working periods with ease")
-        .arg(
-            Arg::with_name(TOPIC_ARG_NAME)
-                .takes_value(true)
-                .help("working period title")
-                .default_value("-"),
-        )
-        .get_matches();
-    let topic = args.value_of(TOPIC_ARG_NAME).unwrap();
+    let args = Args::parse();
+    let topic = args.title;
 
     let mut sec_one_interval = time::interval(time::Duration::from_secs(1));
 
