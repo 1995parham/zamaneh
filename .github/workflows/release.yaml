@@ -46,7 +46,7 @@ jobs:
           tar czvf zamaneh-${{ matrix.artifact_prefix }}.tar.gz zamaneh${{ matrix.binary_postfix }}
           shasum -a 256 zamaneh-${{ matrix.artifact_prefix }}.tar.gz > zamaneh-${{ matrix.artifact_prefix }}.sha256
       - name: releasing assets
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             target/${{ matrix.target }}/release/zamaneh-${{ matrix.artifact_prefix }}.tar.gz
