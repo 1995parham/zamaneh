@@ -30,7 +30,7 @@ jobs:
           toolchain: ${{ matrix.rust }}
           override: true
       - name: checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: cargo build
         uses: actions-rs/cargo@v1
         with:
