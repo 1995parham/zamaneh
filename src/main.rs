@@ -80,10 +80,10 @@ async fn main() {
     });
 
     print!(
-        r#"{}
-Spending time with you is so precious,
-I love every minute that we are together.
-"#,
+        "{}
+Spending time with you is so precious,\r
+I love every minute that we are together.\r
+",
         cursor::Hide
     );
     println!("you are working on {}", topic);
@@ -112,7 +112,7 @@ I love every minute that we are together.
                 }
 
                 print!("{}", termion::cursor::Save);
-                println!("{}", format_duration(secs));
+                print!("{}", format_duration(secs));
                 print!("{}", termion::cursor::Restore);
                 print!("{}", termion::color::Fg(termion::color::Reset));
                 stdout.flush().unwrap();
