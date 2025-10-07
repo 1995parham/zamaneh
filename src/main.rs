@@ -1,5 +1,6 @@
 use clap::Parser;
-use std::io::{stdin, stdout};
+use std::io::{Write, stdout};
+use std::panic;
 use std::process::exit;
 use std::time::Duration;
 use termion::cursor;
@@ -18,7 +19,7 @@ const ABOUT: &str = "
 Manage your working periods with ease
 ----
 Zamaneh helps me to track my times on different tasks,
-you give it a title and then it start couting. it does not
+you give it a title and then it start counting. it does not
 store anything on your system.
 ";
 
@@ -40,32 +41,45 @@ async fn main() {
 
     let mut secs = Duration::new(0, 0);
 
-    let (tx, mut rx) = channel::<Event>(1);
+    let (tx, mut rx) = channel::<Event>(10);
 
-    let stdin = stdin();
-    let stdout = stdout().into_raw_mode().unwrap();
-    stdout.suspend_raw_mode().unwrap();
+    let mut stdout = stdout().into_raw_mode().unwrap();
+
+    // Set up panic hook to restore terminal on panic
+    let original_hook = panic::take_hook();
+    panic::set_hook(Box::new(move |panic_info| {
+        use std::io::{Write, stdout};
+        use termion::raw::IntoRawMode;
+        let mut out = stdout().into_raw_mode().unwrap();
+        let _ = out.suspend_raw_mode();
+        print!("{}", cursor::Show);
+        let _ = out.flush();
+        original_hook(panic_info);
+    }));
 
     let mut is_pause = false;
 
-    tokio::spawn(async move {
+    tokio::task::spawn_blocking(move || {
+        use std::io::stdin;
+        let stdin = stdin();
         for c in stdin.keys() {
             match c.unwrap() {
-                Key::Char('q') => {
-                    let _ = tx.send(Event::Quit).await;
+                Key::Char('q') | Key::Ctrl('c') => {
+                    if tx.blocking_send(Event::Quit).is_err() {
+                        break;
+                    }
                 }
                 Key::Char(' ') => {
-                    let _ = tx.send(Event::Pause).await;
-                }
-                Key::Ctrl('c') => {
-                    let _ = tx.send(Event::Quit).await;
+                    if tx.blocking_send(Event::Pause).is_err() {
+                        break;
+                    }
                 }
                 _ => {}
             }
         }
     });
 
-    println!(
+    print!(
         r#"{}
 Spending time with you is so precious,
 I love every minute that we are together.
@@ -73,7 +87,7 @@ I love every minute that we are together.
         cursor::Hide
     );
     println!("you are working on {}", topic);
-    stdout.activate_raw_mode().unwrap();
+    stdout.flush().unwrap();
 
     loop {
         select! {
@@ -84,7 +98,7 @@ I love every minute that we are together.
                     },
                     Event::Quit => {
                         stdout.suspend_raw_mode().unwrap();
-                        println!("{}you are working for {} on on {}", cursor::Show, format_duration(secs), topic);
+                        println!("{}you are working for {} on {}", cursor::Show, format_duration(secs), topic);
                         exit(0);
                     }
                 }
@@ -101,6 +115,7 @@ I love every minute that we are together.
                 println!("{}", format_duration(secs));
                 print!("{}", termion::cursor::Restore);
                 print!("{}", termion::color::Fg(termion::color::Reset));
+                stdout.flush().unwrap();
             }
         }
     }
