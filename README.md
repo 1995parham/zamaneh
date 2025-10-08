@@ -1,10 +1,13 @@
-# Zamaneh
+<div align="center">
+  <h1>Zamaneh</h1>
+  <h6>The way, you manage your time</h6>
+</div>
+<div align="center">
+  <img alt="GitHub Tag" src="https://img.shields.io/github/v/tag/1995parham/zamaneh?sort=semver&style=for-the-badge&logo=github">
+  <img alt="GitHub Release Date" src="https://img.shields.io/github/release-date/1995parham/zamaneh?style=for-the-badge&logo=github">
+  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/1995parham/zamaneh/rust.yaml?style=for-the-badge&logo=github">
 
-> The way, you manage your time
-
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/1995parham/zamaneh/rust.yaml?label=test&logo=github&style=flat-square&branch=main)
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/1995parham/zamaneh?logo=github&style=flat-square)
-![GitHub Release Date](https://img.shields.io/github/release-date/1995parham/zamaneh?logo=github&style=flat-square)
+</div>
 
 ## Introduction
 
