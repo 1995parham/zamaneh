@@ -4,7 +4,10 @@ name: release
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: write
 
 jobs:
   publish:
@@ -12,8 +15,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
-        rust: [stable]
         include:
           - os: macos-latest
             artifact_prefix: macOS
@@ -24,19 +25,21 @@ jobs:
             target: x86_64-unknown-linux-gnu
             binary_postfix: ""
     steps:
-      - name: installing rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ matrix.rust }}
-          override: true
       - name: checkout repository
-        uses: actions/checkout@v5
-      - name: cargo build
-        uses: actions-rs/cargo@v1
+        uses: actions/checkout@v6
+
+      - name: install rust toolchain
+        uses: dtolnay/rust-toolchain@stable
         with:
-          command: build
-          toolchain: ${{ matrix.rust }}
-          args: --release --target ${{ matrix.target }}
+          targets: ${{ matrix.target }}
+
+      - name: setup rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+
+      - name: cargo build
+        run: cargo build --release --target ${{ matrix.target }}
 
       - name: packaging final binary
         shell: bash
@@ -45,11 +48,10 @@ jobs:
           strip zamaneh${{ matrix.binary_postfix }}
           tar czvf zamaneh-${{ matrix.artifact_prefix }}.tar.gz zamaneh${{ matrix.binary_postfix }}
           shasum -a 256 zamaneh-${{ matrix.artifact_prefix }}.tar.gz > zamaneh-${{ matrix.artifact_prefix }}.sha256
+
       - name: releasing assets
         uses: softprops/action-gh-release@v2
         with:
           files: |
             target/${{ matrix.target }}/release/zamaneh-${{ matrix.artifact_prefix }}.tar.gz
             target/${{ matrix.target }}/release/zamaneh-${{ matrix.artifact_prefix }}.sha256
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
