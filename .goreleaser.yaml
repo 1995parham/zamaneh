@@ -89,6 +89,6 @@ release:
   header: |
     ## zamaneh {{ .Tag }}
 
-    Built with Go {{ .Env.GOVERSION }} on {{ .Date }}.
+    Built with Go {{ .Runtime.Goversion }} on {{ .Date }}.
   footer: |
     **Full Changelog**: https://github.com/1995parham/zamaneh/compare/{{ .PreviousTag }}...{{ .Tag }}
