@@ -10,48 +10,27 @@ permissions:
   contents: write
 
 jobs:
-  publish:
-    name: publishing for ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: macos-latest
-            artifact_prefix: macOS
-            target: x86_64-apple-darwin
-            binary_postfix: ""
-          - os: ubuntu-latest
-            artifact_prefix: linux
-            target: x86_64-unknown-linux-gnu
-            binary_postfix: ""
+  goreleaser:
+    name: goreleaser
+    runs-on: ubuntu-latest
     steps:
       - name: checkout repository
         uses: actions/checkout@v6
-
-      - name: install rust toolchain
-        uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.target }}
+          fetch-depth: 0
 
-      - name: setup rust cache
-        uses: Swatinem/rust-cache@v2
+      - name: set up Go
+        uses: actions/setup-go@v6
         with:
-          key: ${{ matrix.target }}
+          go-version: "1.26"
+          check-latest: true
+          cache: true
 
-      - name: cargo build
-        run: cargo build --release --target ${{ matrix.target }}
-
-      - name: packaging final binary
-        shell: bash
-        run: |
-          cd target/${{ matrix.target }}/release
-          strip zamaneh${{ matrix.binary_postfix }}
-          tar czvf zamaneh-${{ matrix.artifact_prefix }}.tar.gz zamaneh${{ matrix.binary_postfix }}
-          shasum -a 256 zamaneh-${{ matrix.artifact_prefix }}.tar.gz > zamaneh-${{ matrix.artifact_prefix }}.sha256
-
-      - name: releasing assets
-        uses: softprops/action-gh-release@v2
+      - name: run GoReleaser
+        uses: goreleaser/goreleaser-action@v7
         with:
-          files: |
-            target/${{ matrix.target }}/release/zamaneh-${{ matrix.artifact_prefix }}.tar.gz
-            target/${{ matrix.target }}/release/zamaneh-${{ matrix.artifact_prefix }}.sha256
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
